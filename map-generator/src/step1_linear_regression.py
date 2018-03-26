@@ -9,12 +9,9 @@ data = json.load(open(sourcePath))
 result = []
 notesCount = len(data)
 
-print("notesCount:")
-print(notesCount)
-
 Xs = []
 Ys = []
-for index in range(0, notesCount-1):
+for index in range(0, notesCount):
   notePositions = data[index]
   for notePosition in notePositions:
     Xarray = [0] * (notesCount + 1)
@@ -23,31 +20,23 @@ for index in range(0, notesCount-1):
     Xs.append(Xarray)
     Ys.append(notePosition["position"])
 
-reg = linear_model.LinearRegression()
+reg = linear_model.LinearRegression(fit_intercept=True)
 reg.fit(Xs, Ys)
 
-print("slope:")
-print(reg.coef_[0])
-for i in reg.coef_:
-  print(i)
-'''
 resultWithInterval = []
-lastB = 0
-for index in range(0, len(result)-1):
+lastNote = 0
+for index in range(1, len(reg.coef_)):
+  currentNote = reg.coef_[index]
   interval = 0
-  if lastB:
-    interval = lastB - result[index]["b"]
-  lastB = result[index]["b"]
+  if lastNote:
+    interval = lastNote - currentNote
   resultWithInterval.append({
-    "a": result[index]["a"],
-    "b": result[index]["b"],
+    "index": index,
+    "position": currentNote,
     "interval": interval
   })
-    
-print(resultWithInterval)
+  lastNote = currentNote
 
-outputPath = "../output/templateMapping/_least_sq_result.txt"
+outputPath = "../output/templateMapping/_linear_regression_result.txt"
 with open(outputPath, 'w') as resultFile:
   json.dump(resultWithInterval, resultFile, indent=2)
-  
-'''
