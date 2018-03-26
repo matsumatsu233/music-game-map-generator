@@ -20,9 +20,22 @@ for items in data:
   Y = np.array(list(map((lambda item: item["position"]), items)))
   result.append(leastSquare(X, Y))
 
-print(result)
+resultWithInterval = []
+lastB = 0
+for index in range(0, len(result)-1):
+  interval = 0
+  if lastB:
+    interval = lastB - result[index]["b"]
+  lastB = result[index]["b"]
+  resultWithInterval.append({
+    "a": result[index]["a"],
+    "b": result[index]["b"],
+    "interval": interval
+  })
+    
+print(resultWithInterval)
 
 outputPath = "../output/templateMapping/_least_sq_result.txt"
 with open(outputPath, 'w') as resultFile:
-  json.dump(result, resultFile, indent=2)
+  json.dump(resultWithInterval, resultFile, indent=2)
   
